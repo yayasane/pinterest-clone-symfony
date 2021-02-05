@@ -2,9 +2,5 @@
 {% block title 'Edit Pin ' ~ pin.id%}
 {% block body %}
 	<h1>Edit Pin</h1>
-	{{ form_start(form) }}
-	{{ form_widget(form) }}
-	<input type="submit" value='Update Pin' formnovalidate>
-	{{ form_end(form) }}
-	<a href="{{path('app_home')}}">retour</a>
+	{{ include("pins/_form.html.twig", {submitButtonText: 'Update Pin'}) }}
 {% endblock %}
