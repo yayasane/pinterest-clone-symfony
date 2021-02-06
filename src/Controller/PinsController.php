@@ -40,9 +40,9 @@ class PinsController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $em->persist($pin);
             $em->flush();
+            $this->addFlash('success', 'Pin succesfully created');
             return $this->redirectToRoute('app_home');
         }
-
         return $this->render("pins/create.html.twig", ['form' => $form->createView()]);
     }
 
@@ -56,6 +56,7 @@ class PinsController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $em->flush();
+            $this->addFlash('success', 'Pin successfully edited');
             return $this->redirectToRoute('app_home');
         }
 
@@ -72,6 +73,7 @@ class PinsController extends AbstractController
             # code...
             $em->remove($pin);
             $em->flush();
+            $this->addFlash('info', 'Pin successfully deleted');
         }
         return $this->redirectToRoute('app_home');
     }
