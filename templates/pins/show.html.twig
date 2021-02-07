@@ -16,7 +16,8 @@
 					<small datetime="{{pin.createdAt|date('Y-m-d H:i:s')}}">Submitted
 						<time></time>
 						{{pin.createdAt|ago}}
-						by [OWNER FULL NAME]</small>
+						by
+						{{pin.user.fullName}}</small>
 				</p>
 				<p class="pl-3 pb-3">
 					{{pin.description}}
