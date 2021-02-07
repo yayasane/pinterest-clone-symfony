@@ -7,7 +7,7 @@ body {
   font-family: $primary-font, sans-serif;
 }
 
-s/* ection {
+/* s/* ection {
   h1 {
     color: green;
     a {
@@ -43,5 +43,14 @@ s/* ection {
     @extend .rounded;
     @extend .shadow;
     @extend .img-thumbnail;
+  }
+}
+
+.pin {
+  img {
+    transition: transform 0.3s ease-out;
+    &:hover {
+      transform: scale(1.075);
+    }
   }
 }
