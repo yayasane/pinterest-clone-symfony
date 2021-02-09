@@ -11,10 +11,13 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
+/**
+ * @Route("/account")
+ */
 class AccountController extends AbstractController
 {
     /**
-     * @Route("/account", name="app_account", methods="GET")
+     * @Route("", name="app_account", methods="GET")
      */
     public function show(): Response
     {
@@ -23,7 +26,7 @@ class AccountController extends AbstractController
         ]);
     }
     /**
-     * @Route("/account/edit", name="app_account_edit", methods={"GET","PUT"})
+     * @Route("/edit", name="app_account_edit", methods={"GET","PUT"})
      */
     public function edit(Request $request, EntityManagerInterface $em): Response
     {
@@ -40,12 +43,15 @@ class AccountController extends AbstractController
         ]);
     }
     /**
-     * @Route("/account/change-password", name="app_account_change_password", methods="GET|PUT")
+     * @Route("/change-password", name="app_account_change_password", methods="GET|PUT")
      */
     public function changePassword(Request $request, UserPasswordEncoderInterface $passwordEncoder): Response
     {
         $user = $this->getUser();
-        $form = $this->createForm(ChangePasswordFormType::class, null, ['method' => 'put']);
+        $form = $this->createForm(ChangePasswordFormType::class, null, [
+            'method' => 'put',
+            'current_password_is_required' => true
+        ]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $user->setPassword(
