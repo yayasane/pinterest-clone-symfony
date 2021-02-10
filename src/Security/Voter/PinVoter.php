@@ -12,7 +12,7 @@ class PinVoter extends Voter
     {
         // replace with your own logic
         // https://symfony.com/doc/current/security/voters.html
-        return $attribute == 'PIN_CREATE' && (in_array($attribute, ['PIN_MANAGE'])
+        return $attribute == 'PIN_CREATE' || (in_array($attribute, ['PIN_MANAGE'])
             && $subject instanceof \App\Entity\Pin);
     }
 
