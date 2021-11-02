@@ -30,12 +30,14 @@ class AccountController extends AbstractController
     }
     /**
      * @Route("/edit", name="app_account_edit", methods={"GET","PUT"})
-     * @IsGranted("IS_AUTENTICATED_FULLY")
+     * @IsGranted("IS_AUTHENTICATED_FULLY")
      */
     public function edit(Request $request, EntityManagerInterface $em): Response
     {
         $user = $this->getUser();
-        $form = $this->createForm(UserFormType::class, $user, ['method' => 'put']);
+        $form = $this->createForm(UserFormType::class, $user, [
+            'method' => 'put',
+        ]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $em->flush();
@@ -50,19 +52,26 @@ class AccountController extends AbstractController
      * @Route("/change-password", name="app_account_change_password", methods="GET|PUT")
      * @IsGranted("IS_AUTENTICATED_FULLY")
      */
-    public function changePassword(Request $request, UserPasswordEncoderInterface $passwordEncoder): Response
-    {
+    public function changePassword(
+        Request $request,
+        UserPasswordEncoderInterface $passwordEncoder
+    ): Response {
         $user = $this->getUser();
         $form = $this->createForm(ChangePasswordFormType::class, null, [
             'method' => 'put',
-            'current_password_is_required' => true
+            'current_password_is_required' => true,
         ]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $user->setPassword(
-                $passwordEncoder->encodePassword($user, $form['plainPassword']->getData())
+                $passwordEncoder->encodePassword(
+                    $user,
+                    $form['plainPassword']->getData()
+                )
             );
-            $this->getDoctrine()->getManager()->flush();
+            $this->getDoctrine()
+                ->getManager()
+                ->flush();
             $this->addFlash('success', 'Password updated succesfully!');
             return $this->redirectToRoute('app_account');
         }
