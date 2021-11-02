@@ -22,7 +22,8 @@ use Symfony\Component\Security\Guard\Authenticator\AbstractFormLoginAuthenticato
 use Symfony\Component\Security\Guard\PasswordAuthenticatedInterface;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
 
-class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements PasswordAuthenticatedInterface
+class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements
+    PasswordAuthenticatedInterface
 {
     use TargetPathTrait;
 
@@ -33,8 +34,12 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
     private $csrfTokenManager;
     private $passwordEncoder;
 
-    public function __construct(UserRepository $userRepository, UrlGeneratorInterface $urlGenerator, CsrfTokenManagerInterface $csrfTokenManager, UserPasswordEncoderInterface $passwordEncoder)
-    {
+    public function __construct(
+        UserRepository $userRepository,
+        UrlGeneratorInterface $urlGenerator,
+        CsrfTokenManagerInterface $csrfTokenManager,
+        UserPasswordEncoderInterface $passwordEncoder
+    ) {
         $this->userRepository = $userRepository;
         $this->urlGenerator = $urlGenerator;
         $this->csrfTokenManager = $csrfTokenManager;
@@ -43,10 +48,10 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
 
     public function supports(Request $request)
     {
-        self::LOGIN_ROUTE === $request->attributes->get('_route')
-            && $request->isMethod('POST');
-        return self::LOGIN_ROUTE === $request->attributes->get('_route')
-            && $request->isMethod('POST');
+        self::LOGIN_ROUTE === $request->attributes->get('_route') &&
+            $request->isMethod('POST');
+        return self::LOGIN_ROUTE === $request->attributes->get('_route') &&
+            $request->isMethod('POST');
     }
 
     public function getCredentials(Request $request)
@@ -56,10 +61,9 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
             'password' => $request->request->get('password'),
             'csrf_token' => $request->request->get('_csrf_token'),
         ];
-        $request->getSession()->set(
-            Security::LAST_USERNAME,
-            $credentials['email']
-        );
+        $request
+            ->getSession()
+            ->set(Security::LAST_USERNAME, $credentials['email']);
 
         return $credentials;
     }
@@ -68,14 +72,20 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
     {
         $token = new CsrfToken('authenticate', $credentials['csrf_token']);
         if (!$this->csrfTokenManager->isTokenValid($token)) {
-            throw new CustomUserMessageAuthenticationException('Ooops Invalid CSRF Token');
+            throw new CustomUserMessageAuthenticationException(
+                'Ooops Invalid CSRF Token'
+            );
         }
 
-        $user = $this->userRepository->findOneBy(['email' => $credentials['email']]);
+        $user = $this->userRepository->findOneBy([
+            'email' => $credentials['email'],
+        ]);
 
         if (!$user) {
             // fail authentication with a custom error
-            throw new CustomUserMessageAuthenticationException('Identifiant ou mot de passe incorrect.');
+            throw new CustomUserMessageAuthenticationException(
+                'Identifiant ou mot de passe incorrect.'
+            );
         }
 
         return $user;
@@ -83,8 +93,15 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
 
     public function checkCredentials($credentials, UserInterface $user)
     {
-        if (!$this->passwordEncoder->isPasswordValid($user, $credentials['password'])) {
-            throw new CustomUserMessageAuthenticationException('fuck you');
+        if (
+            !$this->passwordEncoder->isPasswordValid(
+                $user,
+                $credentials['password']
+            )
+        ) {
+            throw new CustomUserMessageAuthenticationException(
+                ' Informations d\'identification invalides'
+            );
         }
         return true;
     }
@@ -97,11 +114,25 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
         return $credentials['password'];
     }
 
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $providerKey)
-    {
-        $request->getSession()->getFlashBag()->add('success', 'Welcome ' . $token->getUser()->getFullName() . '!');
+    public function onAuthenticationSuccess(
+        Request $request,
+        TokenInterface $token,
+        string $providerKey
+    ) {
+        $request
+            ->getSession()
+            ->getFlashBag()
+            ->add(
+                'success',
+                'Welcome ' . $token->getUser()->getFullName() . '!'
+            );
         //permet de rédiger l'utilisateur à la page qu'il volait accéder avant qu'on lui redirige sur la page de connexion
-        if ($targetPath = $this->getTargetPath($request->getSession(), $providerKey)) {
+        if (
+            $targetPath = $this->getTargetPath(
+                $request->getSession(),
+                $providerKey
+            )
+        ) {
             return new RedirectResponse($targetPath);
         }
 
@@ -115,9 +146,14 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
      *
      * @return RedirectResponse
      */
-    public function start(Request $request, AuthenticationException $authException = null)
-    {
-        $request->getSession()->getFlashBag()->add('error', 'You need to log in first');
+    public function start(
+        Request $request,
+        AuthenticationException $authException = null
+    ) {
+        $request
+            ->getSession()
+            ->getFlashBag()
+            ->add('error', 'You need to log in first');
         $url = $this->getLoginUrl();
 
         return new RedirectResponse($url);
